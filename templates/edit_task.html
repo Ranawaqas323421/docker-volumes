@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Edit Task - Task Manager{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="page-header">
+        <div><h1>Edit Task</h1><p>Update task information.</p></div>
+    </div>
+
+    <form method="POST" class="task-form">
+        <label for="title">Task Title *</label>
+        <input type="text" id="title" name="title" value="{{ task.title }}" required>
+
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="5">{{ task.description or "" }}</textarea>
+
+        <div class="form-row">
+            <div>
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                    <option value="Work" {% if task.category == "Work" %}selected{% endif %}>Work</option>
+                    <option value="Personal" {% if task.category == "Personal" %}selected{% endif %}>Personal</option>
+                    <option value="Study" {% if task.category == "Study" %}selected{% endif %}>Study</option>
+                    <option value="Other" {% if task.category == "Other" %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+            <div>
+                <label for="priority">Priority</label>
+                <select id="priority" name="priority">
+                    <option value="High" {% if task.priority == "High" %}selected{% endif %}>High</option>
+                    <option value="Medium" {% if task.priority == "Medium" %}selected{% endif %}>Medium</option>
+                    <option value="Low" {% if task.priority == "Low" %}selected{% endif %}>Low</option>
+                </select>
+            </div>
+        </div>
+
+        <label for="due_date">Due Date</label>
+        <input type="date" id="due_date" name="due_date" value="{{ task.due_date or '' }}">
+
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            <option value="Pending" {% if task.status == "Pending" %}selected{% endif %}>Pending</option>
+            <option value="Completed" {% if task.status == "Completed" %}selected{% endif %}>Completed</option>
+        </select>
+
+        <div class="form-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-light">Cancel</a>
+            <button type="submit" class="btn btn-primary">Update Task</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

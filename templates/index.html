@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Task Manager{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Task Dashboard</h1>
+        <p>Manage your tasks efficiently.</p>
+    </div>
+    <a href="{{ url_for('add_task') }}" class="btn btn-primary">+ New Task</a>
+</div>
+
+<div class="stats">
+    <div class="stat-card"><span class="stat-title">Total Tasks</span><strong>{{ total }}</strong></div>
+    <div class="stat-card"><span class="stat-title">Pending</span><strong>{{ pending }}</strong></div>
+    <div class="stat-card"><span class="stat-title">Completed</span><strong>{{ completed }}</strong></div>
+    <div class="stat-card"><span class="stat-title">High Priority</span><strong>{{ high_priority }}</strong></div>
+</div>
+
+<div class="filter-card">
+    <form method="GET" action="{{ url_for('index') }}">
+        <input type="text" name="search" placeholder="Search tasks..." value="{{ search }}">
+
+        <select name="category">
+            <option value="">All Categories</option>
+            <option value="Work" {% if category == "Work" %}selected{% endif %}>Work</option>
+            <option value="Personal" {% if category == "Personal" %}selected{% endif %}>Personal</option>
+            <option value="Study" {% if category == "Study" %}selected{% endif %}>Study</option>
+            <option value="Other" {% if category == "Other" %}selected{% endif %}>Other</option>
+        </select>
+
+        <select name="priority">
+            <option value="">All Priorities</option>
+            <option value="High" {% if priority == "High" %}selected{% endif %}>High</option>
+            <option value="Medium" {% if priority == "Medium" %}selected{% endif %}>Medium</option>
+            <option value="Low" {% if priority == "Low" %}selected{% endif %}>Low</option>
+        </select>
+
+        <select name="status">
+            <option value="">All Status</option>
+            <option value="Pending" {% if status == "Pending" %}selected{% endif %}>Pending</option>
+            <option value="Completed" {% if status == "Completed" %}selected{% endif %}>Completed</option>
+        </select>
+
+        <button type="submit" class="btn btn-secondary">Filter</button>
+        <a href="{{ url_for('index') }}" class="btn btn-light">Reset</a>
+    </form>
+</div>
+
+<div class="task-list">
+{% if tasks %}
+    {% for task in tasks %}
+    <div class="task-card {% if task.status == 'Completed' %}completed{% endif %}">
+        <div class="task-main">
+            <div class="task-title-row">
+                <h3>{{ task.title }}</h3>
+                <span class="priority {{ task.priority|lower }}">{{ task.priority }}</span>
+            </div>
+
+            {% if task.description %}
+                <p class="description">{{ task.description }}</p>
+            {% endif %}
+
+            <div class="task-meta">
+                <span>📁 {{ task.category }}</span>
+                {% if task.due_date %}<span>📅 {{ task.due_date }}</span>{% endif %}
+                <span>{% if task.status == "Completed" %}✅ Completed{% else %}⏳ Pending{% endif %}</span>
+            </div>
+        </div>
+
+        <div class="task-actions">
+            <a href="{{ url_for('complete_task', task_id=task.id) }}" class="btn btn-success">
+                {% if task.status == "Completed" %}Undo{% else %}Complete{% endif %}
+            </a>
+            <a href="{{ url_for('edit_task', task_id=task.id) }}" class="btn btn-secondary">Edit</a>
+            <form method="POST" action="{{ url_for('delete_task', task_id=task.id) }}"
+                  onsubmit="return confirm('Are you sure you want to delete this task?');">
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <h2>No tasks found</h2>
+        <p>Create your first task to get started.</p>
+        <a href="{{ url_for('add_task') }}" class="btn btn-primary">+ Create Task</a>
+    </div>
+{% endif %}
+</div>
+{% endblock %}
